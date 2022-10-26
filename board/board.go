@@ -23,19 +23,19 @@ type Board struct {
 	History   string
 }
 
-func (b *Board) Set(col, player int) {
-	b.Position |= 1 << col
-	b.Bitboards[player] |= 1 << col
+func (b *Board) Set(pos, player int) {
+	b.Position |= 1 << pos
+	b.Bitboards[player] |= 1 << pos
 }
 
-func (b *Board) Unset(col int) {
-	b.Position &= ^(1 << col)
-	b.Bitboards[0] &= ^(1 << col)
-	b.Bitboards[1] &= ^(1 << col)
+func (b *Board) Unset(pos int) {
+	b.Position &= ^(1 << pos)
+	b.Bitboards[0] &= ^(1 << pos)
+	b.Bitboards[1] &= ^(1 << pos)
 }
 
-func (b *Board) Get(col, player int) bool {
-	return b.Bitboards[player]&(1<<col) != 0
+func (b *Board) Get(pos, player int) bool {
+	return b.Bitboards[player]&(1<<pos) != 0
 }
 
 func (b *Board) Lowest(col int) int {

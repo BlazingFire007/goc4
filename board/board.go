@@ -8,6 +8,14 @@ import (
 
 type Bitboard uint64
 
+type SquareCol = byte
+type SquareRow = byte
+type Square = [2]byte
+
+type Position int
+type Column int
+type Row int
+
 // Bitboards
 // 1: X
 // 0: O
@@ -23,49 +31,50 @@ type Board struct {
 	History   string
 }
 
-func (b *Board) Set(pos, player int) {
+func (b *Board) Set(pos Position, player int) {
 	b.Position |= 1 << pos
 	b.Bitboards[player] |= 1 << pos
 }
 
-func (b *Board) Unset(pos int) {
+func (b *Board) Unset(pos Position) {
 	b.Position &= ^(1 << pos)
 	b.Bitboards[0] &= ^(1 << pos)
 	b.Bitboards[1] &= ^(1 << pos)
 }
 
-func (b *Board) Get(pos, player int) bool {
+func (b *Board) Get(pos Position, player int) bool {
 	return b.Bitboards[player]&(1<<pos) != 0
 }
 
-func (b *Board) Lowest(col int) int {
+func (b *Board) Lowest(col Position) Position {
 	bb := b.Bitboards[0] | b.Bitboards[1]
 	var pos int = 0
 	for i := 0; i < 6; i++ {
-		if bb&(1<<(col+i*7)) == 0 {
-			pos = col + i*7
+		if bb&(1<<(int(col)+i*7)) == 0 {
+			pos = int(col) + i*7
 		}
 	}
 	if pos == 0 {
 		if b.Get(col, 0) || b.Get(col, 1) {
-			scol := util.ConvertColBack(col)
-			pos = util.ConvertSquare(string(scol) + "6")
-			return pos - 7
+			square_col := util.ConvertColBack(int(col))
+			pos = util.ConvertSquare(string(square_col) + "6")
+			return Position(pos - 7)
 		}
 	}
-	return pos
+	return Position(pos)
 }
 
-func (b *Board) Undo(col byte) bool {
-	colPos := util.ConvertCol(col)
+func (b *Board) Undo(colSquare SquareCol) bool {
+	col := Position(util.ConvertCol(colSquare))
+	colPos := b.Lowest(col) + 7
 	b.Unset(colPos)
 	b.Turn = !b.Turn
 	b.History = b.History[:len(b.History)-1]
 	return true
 }
 
-func (b *Board) Move(col byte) bool {
-	colPos := util.ConvertCol(col)
+func (b *Board) Move(col SquareCol) bool {
+	colPos := Position(util.ConvertCol(col))
 	var player int
 	if b.Turn {
 		player = 1
@@ -88,10 +97,10 @@ func (b *Board) Load(s string) {
 	}
 }
 
-func GetMoves(b Board) []byte {
-	var moves []byte
+func GetMoves(b Board) []SquareCol {
+	var moves []SquareCol
 	for i := 0; i < 7; i++ {
-		if b.Lowest(i) >= 0 {
+		if b.Lowest(Position(i)) >= 0 {
 			moves = append(moves, util.ConvertColBack(i))
 		}
 	}
@@ -106,9 +115,9 @@ func Print(b Board) {
 			}
 			fmt.Printf("\n|%d|: ", 6-(i/6+1)+1)
 		}
-		if b.Get(i, 1) {
+		if b.Get(Position(i), 1) {
 			fmt.Printf("|X")
-		} else if b.Get(i, 0) {
+		} else if b.Get(Position(i), 0) {
 			fmt.Printf("|O")
 		} else {
 			fmt.Printf("| ")

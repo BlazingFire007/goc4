@@ -2,17 +2,17 @@ package util
 
 import "strings"
 
-func ConvertCol(col byte) int {
-	col = strings.ToUpper(string(col))[0]
-	return int(col - 'A')
+func ConvertCol(col_square byte) int {
+	col_square = strings.ToUpper(string(col_square))[0]
+	return int(col_square - 'A')
 }
 
-func ConvertRow(row byte) int {
-	return 5 - int((row - '1'))
+func ConvertRow(row_square byte) int {
+	return 5 - int((row_square - '1'))
 }
 
-func ConvertColBack(col int) byte {
-	return byte(col + 'A')
+func ConvertColBack(col_index int) byte {
+	return byte(col_index + 'A')
 }
 
 func ConvertSquare(square string) int {

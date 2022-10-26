@@ -82,20 +82,10 @@ func CheckWin(bb Bitboard) bool {
 	}
 	return false
 }
-func CheckCenter(bb Bitboard) bool {
 
-	var CenterMasks = [...]Bitboard{
-		Bitboard(0b0000000_0000000_0011000_0000000_0000000_0000000),
-		Bitboard(0b0000000_0000000_0001100_0000000_0000000_0000000),
-		Bitboard(0b0000000_0000000_0000000_0011000_0000000_0000000),
-		Bitboard(0b0000000_0000000_0000000_0001100_0000000_0000000),
-		Bitboard(0b0000000_0011000_0000000_0000000_0000000_0000000),
-		Bitboard(0b0000000_0001100_0000000_0000000_0000000_0000000),
+func CheckDraw(b Board) bool {
+	if CheckWin(b.Bitboards[0]) || CheckWin(b.Bitboards[1]) {
+		return false
 	}
-	for i := range CenterMasks {
-		if bb&CenterMasks[i] == CenterMasks[i] {
-			return true
-		}
-	}
-	return false
+	return len(GetMoves(b)) == 0
 }

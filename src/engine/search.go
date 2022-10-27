@@ -2,10 +2,9 @@ package engine
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
 
-	"werichardson.com/connect4/board"
+	"werichardson.com/connect4/src/board"
+	"werichardson.com/connect4/src/cache"
 )
 
 type threadResult struct {
@@ -14,14 +13,15 @@ type threadResult struct {
 	thread chan int
 }
 
+var table = cache.NewTable()
+
 func RootSearch(b board.Board, depth int) byte {
-	rand.Seed(time.Now().UnixNano())
 	var ply int = 0
 
 	moves := board.GetMoves(b)
-	// rand.Shuffle(len(moves), func(i, j int) { moves[i], moves[j] = moves[j], moves[i] })
 
-	alpha, beta := -10000, 10000
+	var alpha int = -10000
+	var beta int = 10000
 	var bestMove byte
 	var bestScore int = -10000
 	var threads []threadResult
@@ -63,12 +63,16 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		return Eval(b, ply)
 	}
 
-	var bestScore int
+	var bestScore int = -10000
 	moves := board.GetMoves(b)
-	var score int = -10000
 	for _, move := range moves {
 		b.Move(move)
-		score = -negamax(b, depth-1, -beta, -alpha, ply+1)
+		value, exists := table.Get(cache.Key(b.Position ^ b.Bitboards[0] ^ b.Bitboards[1]))
+		if exists {
+			b.Undo(move)
+			return int(value)
+		}
+		score := -negamax(b, depth-1, -beta, -alpha, ply+1)
 		b.Undo(move)
 		if score > bestScore {
 			bestScore = score
@@ -79,7 +83,7 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		if alpha >= beta {
 			return bestScore
 		}
-
+		table.Set(cache.Key(b.Position^b.Bitboards[0]^b.Bitboards[1]), cache.Value(score))
 	}
 	return bestScore
 }

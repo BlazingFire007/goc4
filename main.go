@@ -3,10 +3,12 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime/debug"
+	"strconv"
 	"strings"
 
-	"werichardson.com/connect4/board"
-	"werichardson.com/connect4/engine"
+	"werichardson.com/connect4/src/board"
+	"werichardson.com/connect4/src/engine"
 )
 
 type Options struct {
@@ -15,13 +17,14 @@ type Options struct {
 }
 
 func main() {
+	debug.SetGCPercent(-1)
 	b := board.Board{Position: 0, Bitboards: [2]board.Bitboard{0, 0}, Turn: true}
-	b.Load("DGE")
-	board.Print(b)
-	fmt.Println(engine.RootSearch(b, 5))
-	os.Exit(0)
 	if len(os.Args) > 1 {
-		// TODO: LOAD AND RESPOND WITH MOVE
+		depth, _ := strconv.Atoi(os.Args[1])
+		b.Load(os.Args[2])
+		board.Print(b)
+		cmove := engine.RootSearch(b, depth)
+		fmt.Println(string(cmove))
 		os.Exit(0)
 	}
 	options := Options{first: true, depth: 12}
@@ -43,7 +46,7 @@ func main() {
 
 func gameLoop(b board.Board, options Options) {
 	if !options.first {
-		cmove := engine.RootSearch(b, options.depth)
+		cmove := byte('d')
 		b.Move(cmove)
 		fmt.Printf("Computer move: %c\n", cmove)
 	}

@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"werichardson.com/connect4/board"
+	"werichardson.com/connect4/src/board"
 )
 
 func Eval(b board.Board, ply int) int {
@@ -14,12 +14,11 @@ func Eval(b board.Board, ply int) int {
 	score := 0
 	winner := Check_winner(b)
 	if winner == opp {
-		score -= 100
+		score -= (100 + ply)
 	}
 	if winner == player {
-		score += 100
+		score += (100 - ply)
 	}
-	score += ply
 	return score
 }
 

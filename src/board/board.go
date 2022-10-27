@@ -2,8 +2,10 @@ package board
 
 import (
 	"fmt"
+	"math"
+	"sort"
 
-	"werichardson.com/connect4/util"
+	"werichardson.com/connect4/src/util"
 )
 
 type Bitboard uint64
@@ -104,6 +106,12 @@ func GetMoves(b Board) []SquareCol {
 			moves = append(moves, util.ConvertColBack(i))
 		}
 	}
+	sort.Slice(moves, func(i, j int) bool {
+		move1 := float64(moves[i])
+		move2 := float64(moves[j])
+		center := float64(68)
+		return math.Abs(center-move1) < math.Abs(center-move2)
+	})
 	return moves
 }
 

@@ -67,7 +67,7 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 	moves := board.GetMoves(b)
 	for _, move := range moves {
 		b.Move(move)
-		value, exists := table.Get(cache.Key(b.Position ^ b.Bitboards[0] ^ b.Bitboards[1]))
+		value, exists := table.Get(cache.Key(b.Position))
 		if exists {
 			b.Undo(move)
 			return int(value)
@@ -83,7 +83,7 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		if alpha >= beta {
 			return bestScore
 		}
-		table.Set(cache.Key(b.Position^b.Bitboards[0]^b.Bitboards[1]), cache.Value(score))
+		table.Set(cache.Key(b.Position), cache.Value(score))
 	}
 	return bestScore
 }

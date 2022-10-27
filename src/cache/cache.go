@@ -1,8 +1,13 @@
 package cache
 
-import "werichardson.com/connect4/src/board"
+import (
+	"werichardson.com/connect4/src/board"
+)
 
-type Key board.Bitboard
+type Key = struct {
+	First  board.Bitboard
+	Second board.Bitboard
+}
 type Value int8
 
 type Table struct {
@@ -10,22 +15,21 @@ type Table struct {
 }
 
 func NewTable() *Table {
-	return &Table{
-		entries: make(map[Key]Value),
-	}
+	return &Table{entries: make(map[Key]Value)}
 }
 
 func (t *Table) Get(key Key) (Value, bool) {
-	v, ok := t.entries[key]
-	return v, ok
+	val, ok := t.entries[key]
+	if !ok {
+		return 0, false
+	}
+	return val, true
 }
 
-func (t *Table) Set(key Key, value Value) {
-	t.entries[key] = value
+func (t *Table) Set(key Key, val Value) {
+	t.entries[key] = val
 }
 
 func (t *Table) Reset() {
-	for k := range t.entries {
-		delete(t.entries, k)
-	}
+	t.entries = make(map[Key]Value)
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"runtime/debug"
 	"strconv"
 	"strings"
 
@@ -17,7 +16,6 @@ type Options struct {
 }
 
 func main() {
-	debug.SetGCPercent(-1)
 	b := board.Board{Position: 0, Bitboards: [2]board.Bitboard{0, 0}, Turn: true}
 	if len(os.Args) > 1 {
 		depth, _ := strconv.Atoi(os.Args[1])

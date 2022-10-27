@@ -1,17 +1,9 @@
 package engine
 
 import (
-	"fmt"
-
 	"werichardson.com/connect4/src/board"
 	"werichardson.com/connect4/src/cache"
 )
-
-type threadResult struct {
-	move   byte
-	score  int
-	thread chan int
-}
 
 var table = cache.NewTable()
 
@@ -20,26 +12,18 @@ func RootSearch(b board.Board, depth int) byte {
 
 	moves := board.GetMoves(b)
 
-	var alpha int = -10000
-	var beta int = 10000
+	var alpha int = -100 + depth
+	var beta int = 100 - depth
 	var bestMove byte
-	var bestScore int = -10000
-	var threads []threadResult
+	var bestScore int = -100 + depth
 	for _, move := range moves {
 		b.Move(move)
 		nb := board.Board{Position: 0, Bitboards: [2]board.Bitboard{0, 0}, Turn: true}
 		nb.Load(b.History)
-		tr := threadResult{move: move, score: 0, thread: make(chan int)}
-		go nmcaller(nb, depth-1, alpha, beta, ply+1, tr.thread)
-		threads = append(threads, tr)
-		b.Undo(move)
-	}
-	for _, tr := range threads {
-		score := <-tr.thread
-		fmt.Printf("Move: %c, Score: %d\n", tr.move, score)
+		score := -negamax(nb, depth-1, -beta, -alpha, ply+1)
 		if score > bestScore {
 			bestScore = score
-			bestMove = tr.move
+			bestMove = move
 		}
 		if bestScore > alpha {
 			alpha = bestScore
@@ -47,12 +31,9 @@ func RootSearch(b board.Board, depth int) byte {
 		if alpha >= beta {
 			return bestMove
 		}
+		b.Undo(move)
 	}
 	return bestMove
-}
-
-func nmcaller(b board.Board, depth, alpha, beta, ply int, thread chan int) {
-	thread <- -negamax(b, depth, alpha, beta, ply)
 }
 
 func negamax(b board.Board, depth, alpha, beta, ply int) int {
@@ -65,14 +46,19 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 
 	var bestScore int = -10000
 	moves := board.GetMoves(b)
+	var score int
 	for _, move := range moves {
 		b.Move(move)
-		value, exists := table.Get(cache.Key(b.Position))
-		if exists {
-			b.Undo(move)
-			return int(value)
+		key := cache.Key{First: b.Bitboards[0], Second: b.Bitboards[1]}
+		val, exists := table.Get(key)
+		if !exists {
+			nb := board.Board{Position: 0, Bitboards: [2]board.Bitboard{0, 0}, Turn: true}
+			nb.Load(b.History)
+			score = -negamax(nb, depth-1, -beta, -alpha, ply+1)
+			table.Set(key, cache.Value(score))
+		} else {
+			score = int(val)
 		}
-		score := -negamax(b, depth-1, -beta, -alpha, ply+1)
 		b.Undo(move)
 		if score > bestScore {
 			bestScore = score
@@ -83,7 +69,6 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		if alpha >= beta {
 			return bestScore
 		}
-		table.Set(cache.Key(b.Position), cache.Value(score))
 	}
 	return bestScore
 }

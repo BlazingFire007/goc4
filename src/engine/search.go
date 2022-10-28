@@ -1,6 +1,8 @@
 package engine
 
 import (
+	"fmt"
+
 	"werichardson.com/connect4/src/board"
 	"werichardson.com/connect4/src/cache"
 )
@@ -12,15 +14,16 @@ func RootSearch(b board.Board, depth int) byte {
 
 	moves := board.GetMoves(b)
 
-	var alpha int = -100 + depth
-	var beta int = 100 - depth
+	var alpha int = -100 - depth
+	var beta int = 100 + depth
 	var bestMove byte
-	var bestScore int = -100 + depth
+	var bestScore int = -100 - depth
 	for _, move := range moves {
 		b.Move(move)
 		nb := board.Board{Position: 0, Bitboards: [2]board.Bitboard{0, 0}, Turn: true}
 		nb.Load(b.History)
 		score := -negamax(nb, depth-1, -beta, -alpha, ply+1)
+		fmt.Printf("Move: %d, Score: %d\n", move, score)
 		if score > bestScore {
 			bestScore = score
 			bestMove = move

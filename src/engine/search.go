@@ -2,8 +2,6 @@ package engine
 
 import (
 	"fmt"
-	"runtime"
-	"time"
 
 	"werichardson.com/connect4/src/board"
 	"werichardson.com/connect4/src/cache"
@@ -15,22 +13,20 @@ var nodes uint64 = 0
 func Root(b board.Board, maxDepth int) byte {
 	var bestScore int = -1000
 	var bestMove byte
-	state := b.History
 	if maxDepth < 11 {
 		maxDepth = 11
 	}
 	for depth := 11; depth <= maxDepth; depth++ {
-		start := time.Now()
+
 		move, score := RootSearch(b, depth)
-		elapsed := fmt.Sprintf("%.2f", time.Since(start).Seconds())
-		fmt.Printf("Depth: %d, Move: %s, Score: %d, Time: %ss\n", depth, string(move), score, elapsed)
+		fmt.Printf("Depth: %d, Move: %s, Score: %d\n", depth, string(move), score)
 		if score > bestScore {
 			bestScore = score
 			bestMove = move
 		}
-		b.Reset()
-		b.Load(state)
-		runtime.GC()
+		if score > 100 {
+			break
+		}
 	}
 	fmt.Println("Nodes: ", nodes)
 	return bestMove
@@ -51,6 +47,9 @@ func RootSearch(b board.Board, depth int) (byte, int) {
 		if score > bestScore {
 			bestScore = score
 			bestMove = move
+		}
+		if bestScore > 100 {
+			return bestMove, bestScore
 		}
 		if bestScore > alpha {
 			alpha = bestScore
@@ -88,6 +87,9 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		b.Undo(move)
 		if score > bestScore {
 			bestScore = score
+		}
+		if score > 100 {
+			return score
 		}
 		if bestScore > alpha {
 			alpha = bestScore

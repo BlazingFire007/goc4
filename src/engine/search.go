@@ -2,28 +2,52 @@ package engine
 
 import (
 	"fmt"
+	"runtime"
+	"time"
 
 	"werichardson.com/connect4/src/board"
 	"werichardson.com/connect4/src/cache"
 )
 
 var table = cache.NewTable()
+var nodes uint64 = 0
 
-func RootSearch(b board.Board, depth int) byte {
+func Root(b board.Board, maxDepth int) byte {
+	var bestScore int = -1000
+	var bestMove byte
+	state := b.History
+	if maxDepth < 11 {
+		maxDepth = 11
+	}
+	for depth := 11; depth <= maxDepth; depth++ {
+		start := time.Now()
+		move, score := RootSearch(b, depth)
+		elapsed := fmt.Sprintf("%.2f", time.Since(start).Seconds())
+		fmt.Printf("Depth: %d, Move: %s, Score: %d, Time: %ss\n", depth, string(move), score, elapsed)
+		if score > bestScore {
+			bestScore = score
+			bestMove = move
+		}
+		b.Reset()
+		b.Load(state)
+		runtime.GC()
+	}
+	fmt.Println("Nodes: ", nodes)
+	return bestMove
+}
+
+func RootSearch(b board.Board, depth int) (byte, int) {
 	var ply int = 0
 
 	moves := board.GetMoves(b)
 
 	var alpha int = -100 - depth
-	var beta int = 100 + depth
+	var beta int = -alpha
 	var bestMove byte
 	var bestScore int = -100 - depth
 	for _, move := range moves {
 		b.Move(move)
-		nb := board.Board{Position: 0, Bitboards: [2]board.Bitboard{0, 0}, Turn: true}
-		nb.Load(b.History)
-		score := -negamax(nb, depth-1, -beta, -alpha, ply+1)
-		fmt.Printf("Move: %d, Score: %d\n", move, score)
+		score := -negamax(b, depth-1, -beta, -alpha, ply+1)
 		if score > bestScore {
 			bestScore = score
 			bestMove = move
@@ -32,14 +56,15 @@ func RootSearch(b board.Board, depth int) byte {
 			alpha = bestScore
 		}
 		if alpha >= beta {
-			return bestMove
+			break
 		}
 		b.Undo(move)
 	}
-	return bestMove
+	return bestMove, bestScore
 }
 
 func negamax(b board.Board, depth, alpha, beta, ply int) int {
+	nodes++
 	if depth == 0 {
 		return Eval(b, ply)
 	}
@@ -47,20 +72,18 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		return Eval(b, ply)
 	}
 
-	var bestScore int = -10000
+	var bestScore int = -1000
 	moves := board.GetMoves(b)
 	var score int
 	for _, move := range moves {
 		b.Move(move)
 		key := cache.Key{First: b.Bitboards[0], Second: b.Bitboards[1]}
 		val, exists := table.Get(key)
-		if !exists {
-			nb := board.Board{Position: 0, Bitboards: [2]board.Bitboard{0, 0}, Turn: true}
-			nb.Load(b.History)
-			score = -negamax(nb, depth-1, -beta, -alpha, ply+1)
-			table.Set(key, cache.Value(score))
+		if exists && val.Depth >= depth {
+			score = -val.Score
 		} else {
-			score = int(val)
+			score = -negamax(b, depth-1, -beta, -alpha, ply+1)
+			table.Set(key, cache.Value{Depth: depth, Score: -score})
 		}
 		b.Undo(move)
 		if score > bestScore {

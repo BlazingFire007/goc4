@@ -4,11 +4,14 @@ import (
 	"werichardson.com/connect4/src/board"
 )
 
-type Key = struct {
+type Key struct {
 	First  board.Bitboard
 	Second board.Bitboard
 }
-type Value int8
+type Value struct {
+	Depth int
+	Score int
+}
 
 type Table struct {
 	entries map[Key]Value
@@ -21,7 +24,7 @@ func NewTable() *Table {
 func (t *Table) Get(key Key) (Value, bool) {
 	val, ok := t.entries[key]
 	if !ok {
-		return 0, false
+		return Value{0, 0}, false
 	}
 	return val, true
 }

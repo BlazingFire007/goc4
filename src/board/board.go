@@ -99,6 +99,14 @@ func (b *Board) Load(s string) {
 	}
 }
 
+func (b *Board) Reset() {
+	b.Position = 0
+	b.Bitboards[0] = 0
+	b.Bitboards[1] = 0
+	b.Turn = true
+	b.History = ""
+}
+
 func GetMoves(b Board) []SquareCol {
 	var moves []SquareCol
 	for i := 0; i < 7; i++ {

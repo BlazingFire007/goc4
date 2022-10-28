@@ -17,11 +17,13 @@ type Options struct {
 
 func main() {
 	b := board.Board{Position: 0, Bitboards: [2]board.Bitboard{0, 0}, Turn: true}
+	// b.Load("DGEG")
+	// fmt.Println(engine.RootNegamax(b, 10))
 	if len(os.Args) > 1 {
 		depth, _ := strconv.Atoi(os.Args[1])
 		b.Load(os.Args[2])
 		board.Print(b)
-		cmove := engine.RootSearch(b, depth)
+		cmove := engine.Root(b, depth)
 		fmt.Println(string(cmove))
 		os.Exit(0)
 	}
@@ -57,7 +59,7 @@ func gameLoop(b board.Board, options Options) {
 			continue
 		}
 		checkGameOver(b, options)
-		cmove := engine.RootSearch(b, options.depth)
+		cmove := engine.Root(b, options.depth)
 		b.Move(cmove)
 		fmt.Printf("Computer move: %c\n", cmove)
 		checkGameOver(b, options)

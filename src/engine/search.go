@@ -2,6 +2,7 @@ package engine
 
 import (
 	"fmt"
+	"time"
 
 	"werichardson.com/connect4/src/board"
 	"werichardson.com/connect4/src/cache"
@@ -10,15 +11,16 @@ import (
 var table = cache.NewTable()
 var nodes uint64 = 0
 
-func Root(b board.Board, maxDepth int) byte {
+func Root(b board.Board, seconds float64) byte {
+	const maxDepth = 43
 	var bestScore int = -1000
 	var bestMove byte
-	if maxDepth < 11 {
-		maxDepth = 11
-	}
+	start := time.Now()
 	for depth := 11; depth <= maxDepth; depth++ {
-
-		move, score := RootSearch(b, depth)
+		if time.Since(start).Seconds() > seconds {
+			break
+		}
+		move, score := RootSearch(b, depth, start, seconds)
 		fmt.Printf("Depth: %d, Move: %s, Score: %d\n", depth, string(move), score)
 		if score > bestScore {
 			bestScore = score
@@ -32,7 +34,7 @@ func Root(b board.Board, maxDepth int) byte {
 	return bestMove
 }
 
-func RootSearch(b board.Board, depth int) (byte, int) {
+func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (byte, int) {
 	var ply int = 0
 
 	moves := board.GetMoves(b)
@@ -42,6 +44,9 @@ func RootSearch(b board.Board, depth int) (byte, int) {
 	var bestMove byte
 	var bestScore int = -100 - depth
 	for _, move := range moves {
+		if time.Since(start).Seconds() > seconds {
+			break
+		}
 		b.Move(move)
 		score := -negamax(b, depth-1, -beta, -alpha, ply+1)
 		if score > bestScore {

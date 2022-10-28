@@ -23,7 +23,7 @@ func main() {
 		depth, _ := strconv.Atoi(os.Args[1])
 		b.Load(os.Args[2])
 		board.Print(b)
-		cmove := engine.Root(b, depth)
+		cmove := engine.Root(b, float64(depth))
 		fmt.Println(string(cmove))
 		os.Exit(0)
 	}
@@ -39,7 +39,7 @@ func main() {
 	} else if gofirstInput == "N" {
 		options.first = false
 	}
-	fmt.Print("Enter a search depth. Recommended: (5-20): ")
+	fmt.Print("Enter a search time. The computer will use ABOUT this many seconds. Recommended: (5-20): ")
 	fmt.Scanf("%d", &options.depth)
 	gameLoop(b, options)
 }
@@ -59,7 +59,7 @@ func gameLoop(b board.Board, options Options) {
 			continue
 		}
 		checkGameOver(b, options)
-		cmove := engine.Root(b, options.depth)
+		cmove := engine.Root(b, float64(options.depth))
 		b.Move(cmove)
 		fmt.Printf("Computer move: %c\n", cmove)
 		checkGameOver(b, options)

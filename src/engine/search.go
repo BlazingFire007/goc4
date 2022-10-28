@@ -23,10 +23,13 @@ func RootSearch(b board.Board, depth int) byte {
 		nb := board.Board{Position: 0, Bitboards: [2]board.Bitboard{0, 0}, Turn: true}
 		nb.Load(b.History)
 		score := -negamax(nb, depth-1, -beta, -alpha, ply+1)
-		fmt.Printf("Move: %d, Score: %d\n", move, score)
+		fmt.Printf("Move: %s, Score: %d\n", string(move), score)
 		if score > bestScore {
 			bestScore = score
 			bestMove = move
+		}
+		if score >= 95 {
+			return bestMove
 		}
 		if bestScore > alpha {
 			alpha = bestScore
@@ -63,6 +66,9 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		b.Undo(move)
 		if score > bestScore {
 			bestScore = score
+		}
+		if score >= 95 {
+			return score
 		}
 		if bestScore > alpha {
 			alpha = bestScore

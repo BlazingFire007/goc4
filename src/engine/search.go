@@ -55,9 +55,7 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		key := cache.Key{First: b.Bitboards[0], Second: b.Bitboards[1]}
 		val, exists := table.Get(key)
 		if !exists {
-			nb := board.Board{Position: 0, Bitboards: [2]board.Bitboard{0, 0}, Turn: true}
-			nb.Load(b.History)
-			score = -negamax(nb, depth-1, -beta, -alpha, ply+1)
+			score = -negamax(b, depth-1, -beta, -alpha, ply+1)
 			table.Set(key, cache.Value(score))
 		} else {
 			score = int(val)

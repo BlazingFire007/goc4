@@ -27,19 +27,16 @@ type Row int
 // 0: Empty
 
 type Board struct {
-	Position  Bitboard
 	Bitboards [2]Bitboard
 	Turn      bool
 	History   string
 }
 
 func (b *Board) Set(pos Position, player int) {
-	b.Position |= 1 << pos
 	b.Bitboards[player] |= 1 << pos
 }
 
 func (b *Board) Unset(pos Position) {
-	b.Position &= ^(1 << pos)
 	b.Bitboards[0] &= ^(1 << pos)
 	b.Bitboards[1] &= ^(1 << pos)
 }
@@ -100,7 +97,6 @@ func (b *Board) Load(s string) {
 }
 
 func (b *Board) Reset() {
-	b.Position = 0
 	b.Bitboards[0] = 0
 	b.Bitboards[1] = 0
 	b.Turn = true

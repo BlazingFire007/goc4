@@ -2,6 +2,7 @@ package engine
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	"werichardson.com/connect4/src/board"
@@ -31,6 +32,7 @@ func Root(b board.Board, seconds float64) byte {
 		}
 	}
 	fmt.Println("Nodes: ", nodes)
+	fmt.Printf("Time: %fs\n", math.Round(time.Since(start).Seconds()*100)/100)
 	return bestMove
 }
 

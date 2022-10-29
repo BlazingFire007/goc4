@@ -12,7 +12,17 @@ func Eval(b board.Board, ply int) int {
 		player, opp = 0, 1
 	}
 	score := 0
-	winner := Check_winner(b)
+	pboard := b.Bitboards[player]
+	oboard := b.Bitboards[opp]
+
+	pwin := board.CheckWin(pboard)
+	owin := board.CheckWin(oboard)
+	winner := -1
+	if pwin {
+		winner = player
+	} else if owin {
+		winner = opp
+	}
 	if winner == opp {
 		score -= (100 + ply)
 	}

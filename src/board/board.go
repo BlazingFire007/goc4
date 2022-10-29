@@ -5,6 +5,7 @@ import (
 	"math"
 	"sort"
 
+	"github.com/fatih/color"
 	"werichardson.com/connect4/src/util"
 )
 
@@ -120,6 +121,8 @@ func GetMoves(b Board) []SquareCol {
 }
 
 func Print(b Board) {
+	cp := color.New(color.FgHiMagenta).PrintfFunc()
+	co := color.New(color.FgHiYellow).PrintfFunc()
 	for i := 0; i < 42; i++ {
 		if i%7 == 0 {
 			if i != 0 {
@@ -128,9 +131,12 @@ func Print(b Board) {
 			fmt.Printf("\n|%d|: ", 6-(i/6+1)+1)
 		}
 		if b.Get(Position(i), 1) {
-			fmt.Printf("|X")
+			fmt.Printf("|")
+			cp("X")
+
 		} else if b.Get(Position(i), 0) {
-			fmt.Printf("|O")
+			fmt.Printf("|")
+			co("O")
 		} else {
 			fmt.Printf("| ")
 		}

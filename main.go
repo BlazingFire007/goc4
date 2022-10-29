@@ -17,8 +17,6 @@ type Options struct {
 
 func main() {
 	b := board.Board{Bitboards: [2]board.Bitboard{0, 0}, Turn: true}
-	// b.Load("DGEG")
-	// fmt.Println(engine.RootNegamax(b, 10))
 	if len(os.Args) > 1 {
 		depth, _ := strconv.Atoi(os.Args[1])
 		b.Load(os.Args[2])

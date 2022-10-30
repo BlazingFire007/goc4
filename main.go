@@ -16,12 +16,13 @@ type Options struct {
 }
 
 func main() {
-	b := board.Board{Bitboards: [2]board.Bitboard{0, 0}, Turn: true}
+	b := board.Board{Bitboards: [2]board.Bitboard{0, 0}, Turn: true, Hash: 0}
 	if len(os.Args) > 1 {
 		depth, _ := strconv.Atoi(os.Args[1])
 		b.Load(os.Args[2])
 		cmove := engine.Root(b, float64(depth))
 		fmt.Println(string(cmove))
+		board.Print(b)
 		os.Exit(0)
 	}
 	options := Options{first: true, depth: 12}

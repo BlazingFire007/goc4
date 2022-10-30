@@ -82,6 +82,9 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 	if owin {
 		return -100 + ply
 	}
+	if board.CheckDraw(b) {
+		return 0
+	}
 	if depth == 0 {
 		return 0
 	}
@@ -94,7 +97,7 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 	var score int
 	for _, move := range moves {
 		b.Move(move)
-		key := cache.Key(cache.ZobristHash(b))
+		key := cache.Key(b.Hash)
 		val, exists := table.Get(key)
 		if exists && val.Depth >= depth {
 			score = val.Score

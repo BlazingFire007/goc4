@@ -1,31 +1,22 @@
 package cache
 
-type Key uint64
-type Value struct {
-	Depth int
-	Score int
+const NoEntry int = 0
+const Alpha int = 1
+const Beta int = 2
+const Exact int = 3
+
+type Entry struct {
+	Value     int
+	Hash      uint64
+	Depth     int
+	EntryType int
 }
 
 type Table struct {
-	entries map[Key]Value
+	Entries []Entry
+	Length  uint64
 }
 
-func NewTable() *Table {
-	return &Table{entries: make(map[Key]Value)}
-}
-
-func (t *Table) Get(key Key) (Value, bool) {
-	val, ok := t.entries[key]
-	if !ok {
-		return Value{0, 0}, false
-	}
-	return val, true
-}
-
-func (t *Table) Set(key Key, val Value) {
-	t.entries[key] = val
-}
-
-func (t *Table) Reset() {
-	t.entries = make(map[Key]Value)
+func NewTable(length uint64) *Table {
+	return &Table{Length: length, Entries: make([]Entry, length)}
 }

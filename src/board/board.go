@@ -31,7 +31,6 @@ type Row int
 type Board struct {
 	Bitboards [2]Bitboard
 	Turn      bool
-	History   string
 	Hash      uint64
 }
 
@@ -79,7 +78,7 @@ func (b *Board) Get(pos Position, player int) bool {
 // 	return Position(pos)
 // }
 
-func (b *Board) Lowest(col Position) Position {
+func (b *Board) Lowest(col Column) Position {
 	bb := b.Bitboards[0] | b.Bitboards[1]
 	start := 42 - (7 - col)
 	for i := start; i >= 0; i -= 7 {
@@ -90,8 +89,7 @@ func (b *Board) Lowest(col Position) Position {
 	return -1
 }
 
-func (b *Board) Undo(colSquare SquareCol) bool {
-	col := Position(util.ConvertCol(colSquare))
+func (b *Board) Undo(col Column) bool {
 	colPos := b.Lowest(col) + 7
 	b.Unset(colPos)
 	b.Turn = !b.Turn
@@ -99,30 +97,27 @@ func (b *Board) Undo(colSquare SquareCol) bool {
 	if b.Turn {
 		player = 1
 	}
-	b.History = b.History[:len(b.History)-1]
 	b.Hash ^= zobrist[int(colPos)][player]
 	return true
 }
 
-func (b *Board) Move(col SquareCol) bool {
-	colPos := Position(util.ConvertCol(col))
+func (b *Board) Move(col Column) bool {
 	var player int
 	if b.Turn {
 		player = 1
 	} else {
 		player = 0
 	}
-	lowestPosOfCol := b.Lowest(colPos)
+	lowestPosOfCol := b.Lowest(col)
 	b.Set(lowestPosOfCol, player)
 	b.Turn = !b.Turn
-	b.History += string(col)
 	b.Hash ^= zobrist[int(lowestPosOfCol)][player]
 	return true
 }
 
 func (b *Board) Load(s string) {
 	for char := range s {
-		b.Move(s[char])
+		b.Move(Column(util.ConvertCol(s[char])))
 	}
 }
 
@@ -130,14 +125,13 @@ func (b *Board) Reset() {
 	b.Bitboards[0] = 0
 	b.Bitboards[1] = 0
 	b.Turn = true
-	b.History = ""
 }
 
-func GetMoves(b Board) []SquareCol {
-	var moves []SquareCol
+func GetMoves(b Board) []Column {
+	var moves = make([]Column, 0, 7)
 	for i := 0; i < 7; i++ {
-		if b.Lowest(Position(i)) >= 0 {
-			moves = append(moves, util.ConvertColBack(i))
+		if b.Lowest(Column(i)) >= 0 {
+			moves = append(moves, Column(i))
 		}
 	}
 	sort.Slice(moves, func(i, j int) bool {

@@ -7,22 +7,23 @@ import (
 
 	"werichardson.com/connect4/src/board"
 	"werichardson.com/connect4/src/cache"
+	"werichardson.com/connect4/src/util"
 )
 
-var table = cache.NewTable()
+var table = cache.NewTable(5000000)
 var nodes uint64 = 0
 
-func Root(b board.Board, seconds float64) byte {
+func Root(b board.Board, seconds float64) board.Column {
 	const maxDepth = 43
 	var bestScore int = -1000
-	var bestMove byte
+	var bestMove board.Column
 	start := time.Now()
 	for depth := 11; depth <= maxDepth; depth++ {
 		if time.Since(start).Seconds() > seconds {
 			break
 		}
 		move, score := RootSearch(b, depth, start, seconds)
-		fmt.Printf("Depth: %d, Move: %s, Score: %d\n", depth, string(move), score)
+		fmt.Printf("Depth: %d, Move: %s, Score: %d\n", depth, string(util.ConvertColBack(int(move))), score)
 		if score > bestScore {
 			bestScore = score
 			bestMove = move
@@ -33,14 +34,14 @@ func Root(b board.Board, seconds float64) byte {
 	return bestMove
 }
 
-func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (byte, int) {
+func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (board.Column, int) {
 	var ply int = 0
 
 	moves := board.GetMoves(b)
 
 	var alpha int = -100 - depth
 	var beta int = -alpha
-	var bestMove byte
+	var bestMove board.Column
 	var bestScore int = -100 - depth
 	for _, move := range moves {
 		if time.Since(start).Seconds() > seconds {
@@ -91,14 +92,17 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 	var score int
 	for _, move := range moves {
 		b.Move(move)
-		key := cache.Key(b.Hash)
-		val, exists := table.Get(key)
-		if exists && val.Depth >= depth {
-			score = val.Score
+		// check if move is in cache and retrive score if it is
+		entry := table.Entries[b.Hash%table.Length]
+		if entry.EntryType == cache.Exact && entry.Depth >= depth && entry.Hash == b.Hash {
+			score = entry.Value
 		} else {
 			score = -negamax(b, depth-1, -beta, -alpha, ply+1)
-			table.Set(key, cache.Value{Depth: depth, Score: score})
+			table.Entries[b.Hash%table.Length] = cache.Entry{Value: score, Hash: b.Hash, Depth: depth, EntryType: cache.Exact}
 		}
+
+		// 			score = -negamax(b, depth-1, -beta, -alpha, ply+1)
+
 		b.Undo(move)
 		if score > 0 {
 			return score

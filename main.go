@@ -9,6 +9,7 @@ import (
 
 	"werichardson.com/connect4/src/board"
 	"werichardson.com/connect4/src/engine"
+	"werichardson.com/connect4/src/util"
 )
 
 type Options struct {
@@ -24,7 +25,7 @@ func main() {
 		depth, _ := strconv.Atoi(os.Args[1])
 		b.Load(os.Args[2])
 		cmove := engine.Root(b, float64(depth))
-		fmt.Println(string(cmove))
+		fmt.Println(string(util.ConvertColBack(int(cmove))))
 		board.Print(b)
 		fmt.Println(b.Hash)
 		pprof.StopCPUProfile()
@@ -50,13 +51,13 @@ func main() {
 func gameLoop(b board.Board, options Options) {
 	if !options.first {
 		cmove := byte('d')
-		b.Move(cmove)
+		b.Move(board.Column(util.ConvertCol(cmove)))
 		fmt.Printf("Computer move: %c\n", cmove)
 	}
 	for {
 		board.Print(b)
 		move := getMoveInput()
-		tryMove := b.Move(move)
+		tryMove := b.Move(board.Column(util.ConvertCol(move)))
 		if !tryMove {
 			fmt.Println("Invalid move. Try again.")
 			continue

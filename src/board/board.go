@@ -35,6 +35,19 @@ type Board struct {
 	Hash      uint64
 }
 
+// init a zobrist hash table
+func InitZobrist() [42][2]uint64 {
+	var zobrist [42][2]uint64
+	for i := 0; i < 42; i++ {
+		for j := 0; j < 2; j++ {
+			zobrist[i][j] = uint64(rand.Int63())
+		}
+	}
+	return zobrist
+}
+
+var zobrist = InitZobrist()
+
 func (b *Board) Set(pos Position, player int) {
 	b.Bitboards[player] |= 1 << pos
 }
@@ -89,9 +102,6 @@ func (b *Board) Move(col SquareCol) bool {
 		player = 0
 	}
 	lowestPosOfCol := b.Lowest(colPos)
-	if lowestPosOfCol < 0 {
-		return false
-	}
 	b.Set(lowestPosOfCol, player)
 	b.Turn = !b.Turn
 	b.History += string(col)
@@ -152,30 +162,4 @@ func Print(b Board) {
 	fmt.Printf("|\n")
 	fmt.Printf("     ---------------\n")
 	fmt.Printf("     |A|B|C|D|E|F|G|\n\n")
-}
-
-// init a zobrist hash table
-func InitZobrist() [42][2]uint64 {
-	var zobrist [42][2]uint64
-	for i := 0; i < 42; i++ {
-		for j := 0; j < 2; j++ {
-			zobrist[i][j] = uint64(rand.Int63())
-		}
-	}
-	return zobrist
-}
-
-var zobrist = InitZobrist()
-
-// zobrist hash
-func ZobristHash(b Board) uint64 {
-	var hash uint64
-	for i := 0; i < 42; i++ {
-		if b.Bitboards[0]&Bitboard(1<<i) != 0 {
-			hash ^= zobrist[i][0]
-		} else if b.Bitboards[1]&Bitboard(1<<i) != 0 {
-			hash ^= zobrist[i][1]
-		}
-	}
-	return hash
 }

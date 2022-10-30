@@ -10,12 +10,12 @@ import (
 	"werichardson.com/connect4/src/util"
 )
 
-var table = cache.NewTable(5000000)
+var table = cache.NewTable(100000000)
 var nodes uint64 = 0
 
 func Root(b board.Board, seconds float64) board.Column {
 	const maxDepth = 43
-	var bestScore int = -1000
+	var bestScore int = -10000
 	var bestMove board.Column
 	start := time.Now()
 	for depth := 11; depth <= maxDepth; depth++ {
@@ -39,10 +39,10 @@ func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (boa
 
 	moves := board.GetMoves(b)
 
-	var alpha int = -100 - depth
+	var alpha int = -1000 - depth
 	var beta int = -alpha
 	var bestMove board.Column
-	var bestScore int = -100 - depth
+	var bestScore int = -1000 - depth
 	for _, move := range moves {
 		if time.Since(start).Seconds() > seconds {
 			break
@@ -75,16 +75,16 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 	pwin := board.CheckAlign(b.Bitboards[player])
 	owin := board.CheckAlign(b.Bitboards[1-player])
 	if pwin {
-		return 100 - ply
+		return 1000 - ply
 	}
 	if owin {
-		return -100 + ply
+		return -1000 + ply
 	}
 	if depth == 0 {
-		return 0
+		return Eval(b)
 	}
 
-	var bestScore int = -1000
+	var bestScore int = -1001
 	moves := board.GetMoves(b)
 	if len(moves) == 0 {
 		return 0
@@ -115,9 +115,6 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		}
 		if alpha >= beta {
 			return bestScore
-		}
-		if alpha >= 1 {
-			return alpha
 		}
 	}
 	return bestScore

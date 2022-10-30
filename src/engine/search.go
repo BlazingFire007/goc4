@@ -116,6 +116,9 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		if alpha >= beta {
 			return bestScore
 		}
+		if alpha >= 1 {
+			return alpha
+		}
 	}
 	return bestScore
 }

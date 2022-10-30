@@ -23,7 +23,7 @@ func main() {
 		b.Load(os.Args[2])
 		cmove := engine.Root(b, float64(depth))
 		fmt.Println(string(util.ConvertColBack(int(cmove))))
-		board.Print(b)
+		// board.Print(b)
 		os.Exit(0)
 	}
 	options := Options{first: true, depth: 12}

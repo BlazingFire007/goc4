@@ -119,7 +119,7 @@ func GetMoves(b Board) []Column {
 	sort.Slice(moves, func(i, j int) bool {
 		move1 := float64(moves[i])
 		move2 := float64(moves[j])
-		center := float64(68)
+		center := float64(3)
 		return math.Abs(center-move1) < math.Abs(center-move2)
 	})
 	return moves

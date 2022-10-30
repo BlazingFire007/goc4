@@ -61,22 +61,33 @@ func (b *Board) Get(pos Position, player int) bool {
 	return b.Bitboards[player]&(1<<pos) != 0
 }
 
+// func (b *Board) Lowest(col Position) Position {
+// 	bb := b.Bitboards[0] | b.Bitboards[1]
+// 	var pos int = 0
+// 	for i := 0; i < 6; i++ {
+// 		if bb&(1<<(int(col)+i*7)) == 0 {
+// 			pos = int(col) + i*7
+// 		}
+// 	}
+// 	if pos == 0 {
+// 		if b.Get(col, 0) || b.Get(col, 1) {
+// 			square_col := util.ConvertColBack(int(col))
+// 			pos = util.ConvertSquare(string(square_col) + "6")
+// 			return Position(pos - 7)
+// 		}
+// 	}
+// 	return Position(pos)
+// }
+
 func (b *Board) Lowest(col Position) Position {
 	bb := b.Bitboards[0] | b.Bitboards[1]
-	var pos int = 0
-	for i := 0; i < 6; i++ {
-		if bb&(1<<(int(col)+i*7)) == 0 {
-			pos = int(col) + i*7
+	start := 42 - (7 - col)
+	for i := start; i >= 0; i -= 7 {
+		if bb&(1<<i) == 0 {
+			return Position(i)
 		}
 	}
-	if pos == 0 {
-		if b.Get(col, 0) || b.Get(col, 1) {
-			square_col := util.ConvertColBack(int(col))
-			pos = util.ConvertSquare(string(square_col) + "6")
-			return Position(pos - 7)
-		}
-	}
-	return Position(pos)
+	return -1
 }
 
 func (b *Board) Undo(colSquare SquareCol) bool {

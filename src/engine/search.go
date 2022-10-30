@@ -52,9 +52,6 @@ func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (byt
 			bestScore = score
 			bestMove = move
 		}
-		if bestScore > 57 {
-			return bestMove, bestScore
-		}
 		if bestScore > alpha {
 			alpha = bestScore
 		}
@@ -82,9 +79,6 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 	if owin {
 		return -100 + ply
 	}
-	if board.CheckDraw(b) {
-		return 0
-	}
 	if depth == 0 {
 		return 0
 	}
@@ -106,6 +100,9 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 			table.Set(key, cache.Value{Depth: depth, Score: score})
 		}
 		b.Undo(move)
+		if score > 0 {
+			return score
+		}
 		if score > bestScore {
 			bestScore = score
 		}
@@ -114,6 +111,9 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		}
 		if alpha >= beta {
 			return bestScore
+		}
+		if alpha >= 1 {
+			return alpha
 		}
 	}
 	return bestScore

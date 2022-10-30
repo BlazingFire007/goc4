@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime/pprof"
 	"strconv"
 	"strings"
 
@@ -16,6 +17,8 @@ type Options struct {
 }
 
 func main() {
+	f, _ := os.Create("c4.prof")
+	pprof.StartCPUProfile(f)
 	b := board.Board{Bitboards: [2]board.Bitboard{0, 0}, Turn: true, Hash: 0}
 	if len(os.Args) > 1 {
 		depth, _ := strconv.Atoi(os.Args[1])
@@ -24,6 +27,7 @@ func main() {
 		fmt.Println(string(cmove))
 		board.Print(b)
 		fmt.Println(b.Hash)
+		pprof.StopCPUProfile()
 		os.Exit(0)
 	}
 	options := Options{first: true, depth: 12}

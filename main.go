@@ -23,6 +23,7 @@ func main() {
 		cmove := engine.Root(b, float64(depth))
 		fmt.Println(string(cmove))
 		board.Print(b)
+		fmt.Println(b.Hash)
 		os.Exit(0)
 	}
 	options := Options{first: true, depth: 12}

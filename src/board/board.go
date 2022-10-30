@@ -71,7 +71,12 @@ func (b *Board) Undo(colSquare SquareCol) bool {
 	colPos := b.Lowest(col) + 7
 	b.Unset(colPos)
 	b.Turn = !b.Turn
+	player := 0
+	if b.Turn {
+		player = 1
+	}
 	b.History = b.History[:len(b.History)-1]
+	b.Hash ^= zobrist[int(colPos)][player]
 	return true
 }
 
@@ -90,7 +95,7 @@ func (b *Board) Move(col SquareCol) bool {
 	b.Set(lowestPosOfCol, player)
 	b.Turn = !b.Turn
 	b.History += string(col)
-	b.Hash = ZobristHash(*b)
+	b.Hash ^= zobrist[int(lowestPosOfCol)][player]
 	return true
 }
 

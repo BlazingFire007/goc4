@@ -1,4 +1,8 @@
 linux/
 macos/
 connect4
+c4.prof
+logs
 .DS_Store
+c4golin
+

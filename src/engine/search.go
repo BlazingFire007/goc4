@@ -14,7 +14,7 @@ var nodes uint64 = 0
 
 func Root(b board.Board, seconds float64) byte {
 	const maxDepth = 43
-	var bestScore int = -1000
+	// var bestScore int = -1000
 	var bestMove byte
 	start := time.Now()
 	for depth := 11; depth <= maxDepth; depth++ {
@@ -23,13 +23,8 @@ func Root(b board.Board, seconds float64) byte {
 		}
 		move, score := RootSearch(b, depth, start, seconds)
 		fmt.Printf("Depth: %d, Move: %s, Score: %d\n", depth, string(move), score)
-		if score > bestScore {
-			bestScore = score
-			bestMove = move
-		}
-		if score > 100 {
-			break
-		}
+		// bestScore = score
+		bestMove = move
 	}
 	fmt.Println("Nodes: ", nodes)
 	fmt.Printf("Time: %fs\n", math.Round(time.Since(start).Seconds()*100)/100)
@@ -55,7 +50,7 @@ func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (byt
 			bestScore = score
 			bestMove = move
 		}
-		if bestScore > 100 {
+		if bestScore > 57 {
 			return bestMove, bestScore
 		}
 		if bestScore > alpha {
@@ -71,11 +66,22 @@ func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (byt
 
 func negamax(b board.Board, depth, alpha, beta, ply int) int {
 	nodes++
-	if depth == 0 {
-		return Eval(b, ply)
+
+	player := 0
+	if b.Turn {
+		player = 1
 	}
-	if Check_winner(b) != -1 {
-		return Eval(b, ply)
+
+	pwin := board.CheckAlign(b.Bitboards[player])
+	owin := board.CheckAlign(b.Bitboards[1-player])
+	if pwin {
+		return 100 - ply
+	}
+	if owin {
+		return -100 + ply
+	}
+	if depth == 0 {
+		return 0
 	}
 
 	var bestScore int = -1000
@@ -83,7 +89,7 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 	var score int
 	for _, move := range moves {
 		b.Move(move)
-		key := cache.Key{First: b.Bitboards[0], Second: b.Bitboards[1]}
+		key := cache.Key(cache.ZobristHash(b))
 		val, exists := table.Get(key)
 		if exists && val.Depth >= depth {
 			score = -val.Score
@@ -95,7 +101,7 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		if score > bestScore {
 			bestScore = score
 		}
-		if score > 100 {
+		if score > 47 {
 			return score
 		}
 		if bestScore > alpha {

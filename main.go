@@ -20,7 +20,6 @@ func main() {
 	if len(os.Args) > 1 {
 		depth, _ := strconv.Atoi(os.Args[1])
 		b.Load(os.Args[2])
-		board.Print(b)
 		cmove := engine.Root(b, float64(depth))
 		fmt.Println(string(cmove))
 		os.Exit(0)

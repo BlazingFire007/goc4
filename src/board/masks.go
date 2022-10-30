@@ -1,6 +1,6 @@
 package board
 
-var win_masks = [...]Bitboard{
+var Win_masks = [...]Bitboard{
 	// rows
 	Bitboard(4123168604160),
 	Bitboard(515396075520),
@@ -75,18 +75,55 @@ var win_masks = [...]Bitboard{
 	Bitboard(1090785280),
 }
 
-func CheckWin(bb Bitboard) bool {
-	for i := range win_masks {
-		if bb&win_masks[i] == win_masks[i] {
-			return true
-		}
-	}
-	return false
-}
+// func CheckWin(bb Bitboard) bool {
+// 	for i := range win_masks {
+// 		if bb&win_masks[i] == win_masks[i] {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }
 
 func CheckDraw(b Board) bool {
-	if CheckWin(b.Bitboards[0]) || CheckWin(b.Bitboards[1]) {
+	if CheckAlign(b.Bitboards[0]) || CheckAlign(b.Bitboards[1]) {
 		return false
 	}
 	return len(GetMoves(b)) == 0
 }
+
+// check for 4 in a row using bitwise operations
+func CheckAlign(bb Bitboard) bool {
+	y := bb & (bb >> 6)
+	if y&(y>>12) != 0 {
+		return true
+	}
+	y = bb & (bb >> 7)
+	if y&(y>>14) != 0 {
+		return true
+	}
+	y = bb & (bb >> 8)
+	if y&(y>>16) != 0 {
+		return true
+	}
+	y = bb & (bb >> 1)
+	return y&(y>>2) != 0
+}
+
+/*
+bool haswon(int64_t board)
+{
+    int64_t y = board & (board >> 7);
+    if (y & (y >> 2 * 7)) // check \ diagonal
+        return true;
+    y = board & (board >> 8);
+    if (y & (y >> 2 * 8)) // check horizontal -
+        return true;
+    y = board & (board >> 9);
+    if (y & (y >> 2 * 9)) // check / diagonal
+        return true;
+    y = board & (board >> 1);
+    if (y & (y >> 2))     // check vertical |
+        return true;
+    return false;
+}
+*/

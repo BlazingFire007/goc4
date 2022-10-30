@@ -30,7 +30,7 @@ type Row int
 
 type Board struct {
 	Bitboards [2]Bitboard
-	Turn      bool
+	Turn      int
 	Hash      uint64
 }
 
@@ -74,26 +74,16 @@ func (b *Board) Lowest(col Column) Position {
 func (b *Board) Undo(col Column) bool {
 	colPos := b.Lowest(col) + 7
 	b.Unset(colPos)
-	b.Turn = !b.Turn
-	player := 0
-	if b.Turn {
-		player = 1
-	}
-	b.Hash ^= zobrist[int(colPos)][player]
+	b.Turn ^= 1
+	b.Hash ^= zobrist[int(colPos)][b.Turn]
 	return true
 }
 
 func (b *Board) Move(col Column) bool {
-	var player int
-	if b.Turn {
-		player = 1
-	} else {
-		player = 0
-	}
 	lowestPosOfCol := b.Lowest(col)
-	b.Set(lowestPosOfCol, player)
-	b.Turn = !b.Turn
-	b.Hash ^= zobrist[int(lowestPosOfCol)][player]
+	b.Set(lowestPosOfCol, b.Turn)
+	b.Turn ^= 1
+	b.Hash ^= zobrist[int(lowestPosOfCol)][b.Turn]
 	return true
 }
 
@@ -106,7 +96,7 @@ func (b *Board) Load(s string) {
 func (b *Board) Reset() {
 	b.Bitboards[0] = 0
 	b.Bitboards[1] = 0
-	b.Turn = true
+	b.Turn = 1
 }
 
 func GetMoves(b Board) []Column {

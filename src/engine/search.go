@@ -67,18 +67,9 @@ func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (boa
 func negamax(b board.Board, depth, alpha, beta, ply int) int {
 	nodes++
 
-	player := 0
-	if b.Turn {
-		player = 1
-	}
-
-	pwin := board.CheckAlign(b.Bitboards[player])
-	owin := board.CheckAlign(b.Bitboards[1-player])
+	pwin := board.CheckAlign(b.Bitboards[b.Turn])
 	if pwin {
 		return 1000 - ply
-	}
-	if owin {
-		return -1000 + ply
 	}
 	if depth == 0 {
 		return Eval(b)

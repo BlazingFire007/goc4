@@ -15,18 +15,19 @@ var nodes uint64 = 0
 
 func Root(b board.Board, seconds float64) board.Column {
 	const maxDepth = 43
-	var bestScore int = -10000
 	var bestMove board.Column
 	start := time.Now()
 	for depth := 11; depth <= maxDepth; depth++ {
 		if time.Since(start).Seconds() > seconds {
 			break
 		}
-		move, score := RootSearch(b, depth, start, seconds)
+		move, score, fullDepth := RootSearch(b, depth, start, seconds)
 		fmt.Printf("Depth: %d, Move: %s, Score: %d\n", depth, string(util.ConvertColBack(int(move))), score)
-		if score > bestScore {
-			bestScore = score
+		if fullDepth {
 			bestMove = move
+		}
+		if score >= 1000-42 {
+			break
 		}
 	}
 	fmt.Println("Nodes: ", nodes)
@@ -34,7 +35,7 @@ func Root(b board.Board, seconds float64) board.Column {
 	return bestMove
 }
 
-func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (board.Column, int) {
+func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (board.Column, int, bool) {
 	var ply int = 0
 
 	moves := board.GetMoves(b)
@@ -45,7 +46,7 @@ func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (boa
 	var bestScore int = -1000 - depth
 	for _, move := range moves {
 		if time.Since(start).Seconds() > seconds {
-			break
+			return bestMove, bestScore, false
 		}
 		b.Move(move)
 		score := -negamax(b, depth-1, -beta, -alpha, ply+1)
@@ -61,17 +62,14 @@ func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (boa
 			break
 		}
 	}
-	return bestMove, bestScore
+	return bestMove, bestScore, true
 }
 
 func negamax(b board.Board, depth, alpha, beta, ply int) int {
 	nodes++
 
 	pwin := board.CheckAlign(b.Bitboards[b.Turn])
-	owin := board.CheckAlign(b.Bitboards[b.Turn^1])
-	if owin {
-		return -1000 + ply
-	}
+
 	if pwin {
 		return 1000 - ply
 	}

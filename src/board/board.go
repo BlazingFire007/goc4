@@ -20,6 +20,11 @@ type Position int
 type Column int
 type Row int
 
+const (
+	X = 1
+	O = 0
+)
+
 // Bitboards
 // 1: X
 // 0: O

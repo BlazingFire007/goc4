@@ -82,22 +82,13 @@ func CheckDraw(b Board) bool {
 	return len(GetMoves(b)) == 0
 }
 
-// check for 4 in a row using bitwise operations
 func CheckAlign(bb Bitboard) bool {
-	y := bb & (bb >> 6)
-	if y&(y>>12) != 0 {
-		return true
+	for _, mask := range Win_masks {
+		if mask&bb == mask {
+			return true
+		}
 	}
-	y = bb & (bb >> 7)
-	if y&(y>>14) != 0 {
-		return true
-	}
-	y = bb & (bb >> 8)
-	if y&(y>>16) != 0 {
-		return true
-	}
-	y = bb & (bb >> 1)
-	return y&(y>>2) != 0
+	return false
 }
 
 // count the number of ways the player can still win

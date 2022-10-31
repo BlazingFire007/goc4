@@ -18,17 +18,11 @@ type Options struct {
 
 func main() {
 	b := board.Board{Bitboards: [2]board.Bitboard{0, 0}, Turn: 1, Hash: 0}
-	b.Load("DDDDECCCCEEEFGFDFFEDCAABB")
-	fmt.Println(b.Turn)
-	board.Print(b)
-	fmt.Println(engine.Root(b, 1))
-	os.Exit(0)
 	if len(os.Args) > 1 {
 		depth, _ := strconv.Atoi(os.Args[1])
 		b.Load(os.Args[2])
 		cmove := engine.Root(b, float64(depth))
 		fmt.Println(string(util.ConvertColBack(int(cmove))))
-		board.Print(b)
 		os.Exit(0)
 	}
 	options := Options{first: true, depth: 12}

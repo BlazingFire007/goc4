@@ -1,15 +1,15 @@
 package cache
 
-const NoEntry int = 0
-const Alpha int = 1
-const Beta int = 2
-const Exact int = 3
+const NoEntry int8 = 0
+const Alpha int8 = 1
+const Beta int8 = 2
+const Exact int8 = 3
 
 type Entry struct {
-	Value     int
+	Value     int8
 	Hash      uint64
-	Depth     int
-	EntryType int
+	Depth     int8
+	EntryType int8
 }
 
 type Table struct {

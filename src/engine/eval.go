@@ -4,7 +4,7 @@ import (
 	"werichardson.com/connect4/src/board"
 )
 
-func Eval(b board.Board) int {
+func Eval(b board.Board) int8 {
 
 	pboard := b.Bitboards[b.Turn]
 	oboard := b.Bitboards[b.Turn^1]

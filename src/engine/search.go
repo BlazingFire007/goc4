@@ -10,14 +10,17 @@ import (
 	"werichardson.com/connect4/src/util"
 )
 
-var table = cache.NewTable(100000000)
+var table = cache.NewTable(20000000)
 var nodes uint64 = 0
 
+const WIN_SCORE int8 = 100
+
 func Root(b board.Board, seconds float64) board.Column {
-	const maxDepth = 43
+	const maxDepth int8 = 43
 	var bestMove board.Column
 	start := time.Now()
-	for depth := 11; depth <= maxDepth; depth++ {
+	var depth int8
+	for depth = 11; depth <= maxDepth; depth++ {
 		if time.Since(start).Seconds() > seconds {
 			break
 		}
@@ -26,7 +29,7 @@ func Root(b board.Board, seconds float64) board.Column {
 		if fullDepth {
 			bestMove = move
 		}
-		if score >= 1000-42 {
+		if score >= WIN_SCORE-42 {
 			break
 		}
 	}
@@ -35,15 +38,15 @@ func Root(b board.Board, seconds float64) board.Column {
 	return bestMove
 }
 
-func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (board.Column, int, bool) {
-	var ply int = 0
+func RootSearch(b board.Board, depth int8, start time.Time, seconds float64) (board.Column, int8, bool) {
+	var ply int8 = 0
 
 	moves := board.GetMoves(b)
 
-	var alpha int = -1000 - depth
-	var beta int = -alpha
+	var alpha int8 = -(WIN_SCORE - depth)
+	var beta int8 = -alpha
 	var bestMove board.Column
-	var bestScore int = -1000 - depth
+	var bestScore int8 = alpha
 	for _, move := range moves {
 		if time.Since(start).Seconds() > seconds {
 			return bestMove, bestScore, false
@@ -65,25 +68,25 @@ func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (boa
 	return bestMove, bestScore, true
 }
 
-func negamax(b board.Board, depth, alpha, beta, ply int) int {
+func negamax(b board.Board, depth int8, alpha, beta, ply int8) int8 {
 	nodes++
 
 	pwin := board.CheckAlign(b.Bitboards[b.Turn])
 
 	if pwin {
-		return 1000 - ply
+		return WIN_SCORE - ply
 	}
 
 	if depth == 0 {
 		return Eval(b)
 	}
 
-	var bestScore int = -1001
+	var bestScore int8 = -(WIN_SCORE - depth)
 	moves := board.GetMoves(b)
 	if len(moves) == 0 {
 		return 0
 	}
-	var score int
+	var score int8
 	for _, move := range moves {
 		b.Move(move)
 		// check if move is in cache and retrive score if it is

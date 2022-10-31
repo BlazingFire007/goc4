@@ -89,7 +89,6 @@ func negamax(b board.Board, depth int8, alpha, beta, ply int8) int8 {
 	var score int8
 	for _, move := range moves {
 		b.Move(move)
-		// check if move is in cache and retrive score if it is
 		entry := table.Entries[b.Hash%table.Length]
 		if entry.EntryType == cache.Exact && entry.Depth >= depth && entry.Hash == b.Hash {
 			score = entry.Value

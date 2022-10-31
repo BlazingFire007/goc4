@@ -2,9 +2,7 @@ package board
 
 import (
 	"fmt"
-	"math"
 	"math/rand"
-	"sort"
 
 	"github.com/fatih/color"
 	"werichardson.com/connect4/src/util"
@@ -24,6 +22,8 @@ const (
 	X = 1
 	O = 0
 )
+
+var sortedByCenter = [7]Column{4, 3, 5, 2, 6, 1, 0}
 
 // Bitboards
 // 1: X
@@ -106,17 +106,11 @@ func (b *Board) Reset() {
 
 func GetMoves(b Board) []Column {
 	var moves = make([]Column, 0, 7)
-	for i := 0; i < 7; i++ {
-		if b.Lowest(Column(i)) >= 0 {
-			moves = append(moves, Column(i))
+	for _, col := range sortedByCenter {
+		if b.Lowest(col) >= 0 {
+			moves = append(moves, col)
 		}
 	}
-	sort.Slice(moves, func(i, j int) bool {
-		move1 := float64(moves[i])
-		move2 := float64(moves[j])
-		center := float64(3)
-		return math.Abs(center-move1) < math.Abs(center-move2)
-	})
 	return moves
 }
 

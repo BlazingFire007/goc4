@@ -49,6 +49,7 @@ func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (boa
 		}
 		b.Move(move)
 		score := -negamax(b, depth-1, -beta, -alpha, ply+1)
+		b.Undo(move)
 		if score > bestScore {
 			bestScore = score
 			bestMove = move
@@ -59,7 +60,6 @@ func RootSearch(b board.Board, depth int, start time.Time, seconds float64) (boa
 		if alpha >= beta {
 			break
 		}
-		b.Undo(move)
 	}
 	return bestMove, bestScore
 }
@@ -68,9 +68,14 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 	nodes++
 
 	pwin := board.CheckAlign(b.Bitboards[b.Turn])
+	owin := board.CheckAlign(b.Bitboards[b.Turn^1])
+	if owin {
+		return -1000 + ply
+	}
 	if pwin {
 		return 1000 - ply
 	}
+
 	if depth == 0 {
 		return Eval(b)
 	}
@@ -91,13 +96,7 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 			score = -negamax(b, depth-1, -beta, -alpha, ply+1)
 			table.Entries[b.Hash%table.Length] = cache.Entry{Value: score, Hash: b.Hash, Depth: depth, EntryType: cache.Exact}
 		}
-
-		// 			score = -negamax(b, depth-1, -beta, -alpha, ply+1)
-
 		b.Undo(move)
-		if score > 0 {
-			return score
-		}
 		if score > bestScore {
 			bestScore = score
 		}
@@ -106,9 +105,6 @@ func negamax(b board.Board, depth, alpha, beta, ply int) int {
 		}
 		if alpha >= beta {
 			return bestScore
-		}
-		if alpha >= 1 {
-			return alpha
 		}
 	}
 	return bestScore

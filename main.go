@@ -19,6 +19,7 @@ type Options struct {
 func main() {
 	b := board.Board{Bitboards: [2]board.Bitboard{0, 0}, Turn: 1, Hash: 0}
 	b.Load("DDDDECCCCEEEFGFDFFEDCAABB")
+	fmt.Println(b.Turn)
 	board.Print(b)
 	fmt.Println(engine.Root(b, 1))
 	os.Exit(0)

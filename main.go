@@ -78,7 +78,7 @@ func ask(question string) string {
 }
 
 func checkGameOver(b board.Board, options Options) {
-	var winner int = engine.Check_winner(b)
+	var winner int8 = engine.Check_winner(b)
 	if board.CheckDraw(b) {
 		winner = 2
 	}
@@ -86,7 +86,7 @@ func checkGameOver(b board.Board, options Options) {
 		return
 	}
 	board.Print(b)
-	var player int
+	var player int8
 	if options.first {
 		player = 1
 	} else {

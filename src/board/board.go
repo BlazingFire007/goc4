@@ -2,7 +2,9 @@ package board
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
+	"sort"
 
 	"github.com/fatih/color"
 	"werichardson.com/connect4/src/util"
@@ -23,8 +25,6 @@ const (
 	O = 0
 )
 
-var sortedByCenter = [7]Column{4, 3, 5, 2, 6, 1, 0}
-
 // Bitboards
 // 1: X
 // 0: O
@@ -35,7 +35,7 @@ var sortedByCenter = [7]Column{4, 3, 5, 2, 6, 1, 0}
 
 type Board struct {
 	Bitboards [2]Bitboard
-	Turn      int
+	Turn      int8
 	Hash      uint64
 }
 
@@ -52,7 +52,7 @@ func InitZobrist() [42][2]uint64 {
 
 var zobrist = InitZobrist()
 
-func (b *Board) Set(pos Position, player int) {
+func (b *Board) Set(pos Position, player int8) {
 	b.Bitboards[player] |= 1 << pos
 }
 
@@ -106,11 +106,17 @@ func (b *Board) Reset() {
 
 func GetMoves(b Board) []Column {
 	var moves = make([]Column, 0, 7)
-	for _, col := range sortedByCenter {
-		if b.Lowest(col) >= 0 {
-			moves = append(moves, col)
+	for i := 0; i < 7; i++ {
+		if b.Lowest(Column(i)) >= 0 {
+			moves = append(moves, Column(i))
 		}
 	}
+	sort.Slice(moves, func(i, j int) bool {
+		move1 := float64(moves[i])
+		move2 := float64(moves[j])
+		center := float64(3)
+		return math.Abs(center-move1) < math.Abs(center-move2)
+	})
 	return moves
 }
 

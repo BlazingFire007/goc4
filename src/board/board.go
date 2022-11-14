@@ -35,7 +35,7 @@ const (
 
 type Board struct {
 	Bitboards [2]Bitboard
-	Turn      int
+	Turn      int8
 	Hash      uint64
 }
 
@@ -52,7 +52,7 @@ func InitZobrist() [42][2]uint64 {
 
 var zobrist = InitZobrist()
 
-func (b *Board) Set(pos Position, player int) {
+func (b *Board) Set(pos Position, player int8) {
 	b.Bitboards[player] |= 1 << pos
 }
 

@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"werichardson.com/connect4/src/board"
+	"github.com/BlazingFire007/goc4/src/board"
 )
 
 func Eval(b board.Board) int8 {

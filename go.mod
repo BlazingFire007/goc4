@@ -1,4 +1,4 @@
-module werichardson.com/connect4
+module github.com/BlazingFire007/goc4
 
 go 1.19
 

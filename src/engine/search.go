@@ -5,9 +5,9 @@ import (
 	"math"
 	"time"
 
-	"werichardson.com/connect4/src/board"
-	"werichardson.com/connect4/src/cache"
-	"werichardson.com/connect4/src/util"
+	"github.com/BlazingFire007/goc4/src/board"
+	"github.com/BlazingFire007/goc4/src/cache"
+	"github.com/BlazingFire007/goc4/src/util"
 )
 
 var table = cache.NewTable(20000000)

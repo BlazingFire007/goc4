@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"werichardson.com/connect4/src/board"
-	"werichardson.com/connect4/src/engine"
-	"werichardson.com/connect4/src/util"
+	"github.com/BlazingFire007/goc4/src/board"
+	"github.com/BlazingFire007/goc4/src/engine"
+	"github.com/BlazingFire007/goc4/src/util"
 )
 
 type Options struct {

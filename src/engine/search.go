@@ -20,7 +20,7 @@ func Root(b board.Board, seconds float64) board.Column {
 	var bestMove board.Column
 	start := time.Now()
 	var depth int8
-	for depth = 11; depth <= maxDepth; depth++ {
+	for depth = 8; depth <= maxDepth; depth++ {
 		if time.Since(start).Seconds() > seconds {
 			break
 		}

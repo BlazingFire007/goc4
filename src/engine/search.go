@@ -5,9 +5,9 @@ import (
 	"math"
 	"time"
 
-	"github.com/BlazingFire007/goc4/src/board"
-	"github.com/BlazingFire007/goc4/src/cache"
-	"github.com/BlazingFire007/goc4/src/util"
+	"github.com/eli-rich/goc4/src/board"
+	"github.com/eli-rich/goc4/src/cache"
+	"github.com/eli-rich/goc4/src/util"
 )
 
 var table = cache.NewTable(20000000)

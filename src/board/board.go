@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"sort"
 
-	"github.com/BlazingFire007/goc4/src/util"
+	"github.com/eli-rich/goc4/src/util"
 	"github.com/fatih/color"
 )
 

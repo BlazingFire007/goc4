@@ -1,4 +1,4 @@
-module github.com/BlazingFire007/goc4
+module github.com/eli-rich/goc4
 
 go 1.19
 

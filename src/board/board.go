@@ -16,9 +16,9 @@ type SquareCol = byte
 type SquareRow = byte
 type Square = [2]byte
 
-type Position int
-type Column int
-type Row int
+type Position int8
+type Column int8
+type Row int8
 
 const (
 	X = 1
@@ -61,7 +61,7 @@ func (b *Board) Unset(pos Position) {
 	b.Bitboards[1] &= ^(1 << pos)
 }
 
-func (b *Board) Get(pos Position, player int) bool {
+func (b *Board) Get(pos Position, player int8) bool {
 	return b.Bitboards[player]&(1<<pos) != 0
 }
 

@@ -16,15 +16,9 @@ func Eval(b board.Board) int8 {
 }
 
 func Check_winner(b board.Board) int8 {
-	pboard := b.Bitboards[b.Turn]
 	oboard := b.Bitboards[b.Turn^1]
-
-	pwin := board.CheckAlign(pboard)
 	owin := board.CheckAlign(oboard)
-
-	if pwin {
-		return b.Turn
-	} else if owin {
+	if owin {
 		return b.Turn ^ 1
 	}
 	return -1

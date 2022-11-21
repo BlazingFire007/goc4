@@ -83,3 +83,7 @@ github.com/eli-rich/goc4/src/engine/search.go:95.9,98.4 2 0
 github.com/eli-rich/goc4/src/engine/search.go:100.24,102.4 1 0
 github.com/eli-rich/goc4/src/engine/search.go:103.24,105.4 1 0
 github.com/eli-rich/goc4/src/engine/search.go:106.20,108.4 1 0
+github.com/eli-rich/goc4/src/util/util.go:5.38,8.2 2 1
+github.com/eli-rich/goc4/src/util/util.go:10.38,12.2 1 1
+github.com/eli-rich/goc4/src/util/util.go:14.41,16.2 1 1
+github.com/eli-rich/goc4/src/util/util.go:18.39,22.2 3 1

@@ -166,3 +166,12 @@ func TestBoardMoves(t *testing.T) {
 		t.Errorf("GetMoves() is not 4")
 	}
 }
+
+func TestPrint(t *testing.T) {
+	b := Board{Bitboards: [2]Bitboard{0, 0}, Turn: 0, Hash: 0}
+	b.Load("ABCABCGG")
+	didComplete := Print(b)
+	if !didComplete {
+		t.Errorf("Print() did not complete")
+	}
+}

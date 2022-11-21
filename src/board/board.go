@@ -120,7 +120,7 @@ func GetMoves(b Board) []Column {
 	return moves
 }
 
-func Print(b Board) {
+func Print(b Board) bool {
 	cp := color.New(color.FgHiMagenta).PrintfFunc()
 	co := color.New(color.FgHiYellow).PrintfFunc()
 	for i := 0; i < 42; i++ {
@@ -144,4 +144,5 @@ func Print(b Board) {
 	fmt.Printf("|\n")
 	fmt.Printf("     ---------------\n")
 	fmt.Printf("     |A|B|C|D|E|F|G|\n\n")
+	return true
 }

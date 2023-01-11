@@ -68,7 +68,7 @@ func RootSearch(b board.Board, depth int8, start time.Time, seconds float64) (bo
 	return bestMove, bestScore, true
 }
 
-func negamax(b board.Board, depth int8, alpha, beta, ply int8) int8 {
+func negamax(b board.Board, depth, alpha, beta, ply int8) int8 {
 	nodes++
 
 	pwin := board.CheckAlign(b.Bitboards[b.Turn])

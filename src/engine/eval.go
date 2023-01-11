@@ -9,8 +9,8 @@ func Eval(b board.Board) int8 {
 	pboard := b.Bitboards[b.Turn]
 	oboard := b.Bitboards[b.Turn^1]
 
-	playerRemain := board.WinsRemaining(pboard, oboard)
-	oppRemain := board.WinsRemaining(oboard, pboard)
+	playerRemain := board.WinsRemaining(oboard)
+	oppRemain := board.WinsRemaining(pboard)
 
 	return playerRemain - oppRemain
 }

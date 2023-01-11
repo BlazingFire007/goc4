@@ -44,7 +44,7 @@ func TestMasks(t *testing.T) {
 func TestRemaining(t *testing.T) {
 	b := Board{Bitboards: [2]Bitboard{0, 0}, Turn: 0, Hash: 0}
 	b.Load("ABCABCABCABCED")
-	if WinsRemaining(b.Bitboards[0], b.Bitboards[1]) != 38 {
+	if WinsRemaining(b.Bitboards[1]) != 38 {
 		t.Errorf("Wins_remaining() is not 0")
 	}
 }

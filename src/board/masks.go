@@ -92,7 +92,7 @@ func CheckAlign(bb Bitboard) bool {
 }
 
 // count the number of ways the player can still win
-func WinsRemaining(playerbb, oppbb Bitboard) int8 {
+func WinsRemaining(oppbb Bitboard) int8 {
 	var remaining int8 = 69
 	for _, mask := range Win_masks {
 		if mask&oppbb != 0 {
